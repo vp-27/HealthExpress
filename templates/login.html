@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Medical Records</title>
+    <!-- Updated to use Flask's url_for for static files -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Back Button -->
+    <button id="language-back-button">Back</button>
+
+    <!-- Main Container for Doctor and Patient Views -->
+    <div class="main-container">
+        <!-- Doctor View Section -->
+        <div class="left-side">
+            <h2 id="doctor-heading">Doctor View</h2>
+            <!-- Login Form -->
+            <div class="form-section">
+                <h3 id="login-heading">Login</h3>
+                <form id="login-form" onsubmit="showLoadingScreen()">
+                    <label for="username" id="username-label">Patient Phone Number:</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter your username" autocomplete="off">
+
+                    <label for="password" id="password-label">Password:</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password" autocomplete="off">
+
+                    <button type="submit" id="login-button">Log In</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Patient View Section -->
+        <div class="right-side">
+            <h2 id="patient-heading">Patient View</h2>
+            <!-- Phone Number Validation Form -->
+            <div class="form-section">
+                <h3 id="call-heading"> Telemedicine Hub</h3>
+                <form method="post" onsubmit="return validatePhoneNumber() && showLoadingScreen()">
+                    <label for="to_number">Phone Number:</label>
+                    <input type="text" name="to_number" id="to_number" placeholder="+1234567890" required>
+                    <input type="submit" value="Call">
+                </form>
+            </div>
+
+            <!-- Link to Webform -->
+            <div class="form-section">
+                <a href="{{ url_for('webform') }}" id="webform-link" onclick="showLoadingScreen()">Fill out Webform</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="spinner"></div>
+        <p id="loading-text">Processing...</p>
+    </div>
+
+    <script>
+        function validatePhoneNumber() {
+            var phoneNumber = document.getElementById('to_number').value;
+            var regex = /^\+?\d{10,15}$/;
+            if (!regex.test(phoneNumber)) {
+                alert("Invalid phone number format. Please use E.164 format.");
+                return false;
+            }
+            return true;
+        }
+
+        function showLoadingScreen() {
+            document.getElementById('loading-screen').style.display = 'flex';
+        }
+    </script>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

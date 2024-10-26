@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Progress</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Call in Progress</h1>
+    <p>Calling: <span id="to-number">{{ to_number }}</span></p>
+    <p>Call SID: <span id="call-sid">{{ call_sid }}</span></p>
+    
+    <div id="conversation"></div>
+
+    <script>
+      const callSid = '{{ call_sid }}';
+      const conversation = document.getElementById('conversation');
+
+      const eventSource = new EventSource(`/stream/${callSid}`);
+
+      eventSource.onmessage = function(event) {
+          console.log(event.data);
+          const data = JSON.parse(event.data);
+
+          if (data.type === "call_status") {
+              // Handle call status update
+              const statusDiv = document.createElement('div');
+              statusDiv.className = 'message status';
+              statusDiv.innerHTML = `<strong>Status:</strong> ${data.status}`;
+              conversation.appendChild(statusDiv);
+
+              if (data.status === 'completed' || data.status === 'failed' || data.status === 'busy' || data.status === 'no-answer' || data.status === 'canceled') {
+                  eventSource.close();
+                  window.location.href = data.medical_record_url;
+              }
+          } else {
+              // Handle regular conversation updates
+              const messageDiv = document.createElement('div');
+              messageDiv.className = `message ${data.speaker}`;
+              messageDiv.innerHTML = `<strong>${data.speaker === 'ai' ? 'AI' : 'User'}:</strong> ${data.text}`;
+              conversation.appendChild(messageDiv);
+          }
+
+          conversation.scrollTop = conversation.scrollHeight;
+      };
+
+      eventSource.onerror = function(error) {
+          console.error('EventSource failed:', error);
+          eventSource.close();
+      };
+  </script>
+</body>
+</html>

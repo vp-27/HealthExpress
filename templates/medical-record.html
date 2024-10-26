@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Record Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <!-- Back Button -->
+    <button id="back-button">Back</button>
+
+    <div class="container">
+        <h1 id="medical-record-title">Medical Record Summary</h1>
+
+        <!-- Patient Information -->
+        <div class="patient-info">
+            <h2 id="patient-info-heading">Patient Information</h2>
+            <table>
+                <tr>
+                    <td><strong id="first-name-label">First Name</strong></td>
+                    <td id="first-name">{{ record.fname }}</td>
+                    <td><strong id="last-name-label">Last Name</strong></td>
+                    <td id="last-name">{{ record.lname }}</td>
+                </tr>
+                <tr>
+                    <td><strong id="age-label">Age</strong></td>
+                    <td id="age">{{ record.age }}</td>
+                    <td><strong id="gender-label">Gender</strong></td>
+                    <td id="gender">{{ record.gender }}</td>
+                </tr>
+                <tr>
+                    <td><strong id="height-label">Height (cm)</strong></td>
+                    <td id="height">{{ record.height }}</td>
+                    <td><strong id="weight-label">Weight (kg)</strong></td>
+                    <td id="weight">{{ record.weight }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Chronological Medical Records Summary -->
+        <div class="record-summary">
+            <h2 id="record-summary-heading">Chronological Medical Records Summary</h2>
+            <table id="record-table" class="record-table">
+                <thead>
+                    <tr>
+                        <th id="date-time-header">Date/Time</th>
+                        <th id="encounter-summary-header">Encounter Summary</th>
+                    </tr>
+                </thead>
+                <tbody id="record-entries">
+                    {% if record.entries %}
+                        {% for entry in record.entries %}
+                            {% for date, summary in entry.items() %}
+                            <tr>
+                                <td>{{ date }}</td>
+                                <td>{{ summary | map('trim', '- ') | map('remove_trailing_punctuation') | join('. ') }}.</td>
+                            </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="2">No medical entries found.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="loading-screen" class="loading-screen">
+        <div class="spinner"></div>
+        <p id="loading-text">Loading...</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
